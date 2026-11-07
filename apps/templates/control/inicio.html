@@ -1,0 +1,37 @@
+
+{% extends 'control/base.html' %}
+
+{% block content %}
+
+<section class="tarjeta bienvenida">
+
+    <h2>Bienvenido a Mi Agenda</h2>
+
+    <p>
+        Hola, {{ user.first_name|default:user.username }}.
+        Desde aquí puedes gestionar tus clientes y sus citas.
+    </p>
+
+    <div class="resumen">
+
+        <div class="contador">
+            <h3>Clientes</h3>
+            <p>{{ total_clientes }}</p>
+            <a href="{% url 'clientes' %}" class="boton">
+                Ver clientes
+            </a>
+        </div>
+
+        <div class="contador">
+            <h3>Citas</h3>
+            <p>{{ total_citas }}</p>
+            <a href="{% url 'citas' %}" class="boton">
+                Ver citas
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

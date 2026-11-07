@@ -1,0 +1,21 @@
+{% extends 'control/base.html' %}
+{% block content %}
+<section class="tarjeta">
+<h2>{% if editar %}Editar cliente{% else %}Registrar cliente{% endif %}</h2>
+<form method="post" action="{% url 'guardar_cliente' %}">
+{% csrf_token %}
+{% if editar %}<input type="hidden" name="id_cliente" value="{{ editar.id }}">{% endif %}
+<label>Nombre</label><input type="text" name="nombre" maxlength="100" value="{{ editar.nombre|default:'' }}" required>
+<label>Apellido</label><input type="text" name="apellido" maxlength="100" value="{{ editar.apellido|default:'' }}" required>
+<label>Correo</label><input type="email" name="correo" maxlength="150" value="{{ editar.correo|default:'' }}" required>
+<label>DNI</label><input type="text" name="dni" maxlength="8" minlength="8" pattern="[0-9]{8}" value="{{ editar.dni|default:'' }}" required>
+<label>Teléfono (opcional)</label><input type="text" name="telefono" maxlength="30" value="{{ editar.telefono|default:'' }}">
+<div class="botones"><button type="submit" class="guardar">{% if editar %}Actualizar{% else %}Guardar cliente{% endif %}</button><a href="{% url 'clientes' %}" class="boton limpiar">Limpiar</a></div>
+</form></section>
+<section class="tarjeta"><h2>Lista de clientes</h2>
+<form method="get" class="buscar"><input type="search" name="buscar" value="{{ buscar }}" placeholder="Buscar nombre, apellido o DNI"><button type="submit" class="buscar-btn">Buscar</button><a href="{% url 'clientes' %}" class="boton limpiar">Ver todos</a></form>
+<div class="tabla-contenedor"><table><thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Correo</th><th>DNI</th><th>Teléfono</th><th>Creado</th><th>Actualizado</th><th>Acciones</th></tr></thead><tbody>
+{% for cliente in clientes %}<tr><td>{{ cliente.id }}</td><td>{{ cliente.nombre }}</td><td>{{ cliente.apellido }}</td><td>{{ cliente.correo }}</td><td>{{ cliente.dni }}</td><td>{{ cliente.telefono|default:'-' }}</td><td>{{ cliente.created_at|date:'d/m/Y H:i' }}</td><td>{{ cliente.updated_at|date:'d/m/Y H:i' }}</td><td><div class="acciones"><a href="{% url 'clientes' %}?editar={{ cliente.id }}" class="boton editar">Editar</a><form method="post" class="form-eliminar" action="{% url 'eliminar_cliente' cliente.id %}">{% csrf_token %}<button type="submit" class="eliminar">Eliminar</button></form></div></td></tr>
+{% empty %}<tr><td colspan="9">No hay clientes registrados.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

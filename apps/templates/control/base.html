@@ -1,0 +1,77 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Agenda Simple V2</title>
+
+    <link rel="stylesheet" href="{% static 'control/css/style.css' %}">
+
+    <script src="{% static 'control/js/app.js' %}" defer></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Mi Agenda Simple V2</h1>
+        <p>Django 6 + MariaDB 11.8</p>
+    </header>
+
+    <nav>
+
+        <a href="{% url 'inicio' %}">Inicio</a>
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'clientes' %}">Clientes</a>
+            <a href="{% url 'citas' %}">Citas</a>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="enlace">
+                    Cerrar sesión
+                </button>
+            </form>
+
+        {% else %}
+
+            <a href="{% url 'login' %}">Iniciar sesión</a>
+
+        {% endif %}
+
+    </nav>
+
+    <main>
+
+        {% if messages %}
+            {% for mensaje in messages %}
+                <div class="aviso">
+                    {{ mensaje }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <footer>
+
+        <div class="redes">
+            Facebook · Instagram · YouTube
+        </div>
+
+        <div class="copyright">
+            © 2026 Agenda Simple - Proyecto Educativo
+        </div>
+
+    </footer>
+
+</body>
+</html>

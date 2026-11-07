@@ -1,0 +1,21 @@
+{% extends 'control/base.html' %}
+{% block content %}
+<section class="tarjeta"><h2>{% if editar %}Editar cita{% else %}Agendar cita{% endif %}</h2>
+<form method="post" action="{% url 'guardar_cita' %}">{% csrf_token %}
+{% if editar %}<input type="hidden" name="id_cita" value="{{ editar.id }}">{% endif %}
+<label>Seleccionar cliente</label><select name="id_cliente" required><option value="">Seleccione un cliente</option>{% for cliente in clientes %}<option value="{{ cliente.id }}" {% if editar.cliente_id == cliente.id %}selected{% endif %}>{{ cliente.nombre }} {{ cliente.apellido }}</option>{% endfor %}</select>
+<label>Asunto</label><input type="text" name="asunto" maxlength="200" value="{{ editar.asunto|default:'' }}" required>
+<label>Fecha</label><input type="date" name="fecha" value="{% if editar %}{{ editar.fecha|date:'Y-m-d' }}{% endif %}" required>
+<label>Hora</label><input type="time" name="hora" value="{% if editar %}{{ editar.hora|time:'H:i' }}{% endif %}" required>
+<label>Dirección</label><input type="text" name="direccion" maxlength="255" value="{{ editar.direccion|default:'' }}" required>
+<label>Referencia (opcional)</label><input type="text" name="referencia" maxlength="255" value="{{ editar.referencia|default:'' }}">
+<label>Notas (opcional)</label><textarea name="notas" rows="3">{{ editar.notas|default:'' }}</textarea>
+<label>Estado</label><select name="estado" required>{% for valor, etiqueta in estados %}<option value="{{ valor }}" {% if editar.estado == valor or not editar and valor == 'Pendiente' %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}</select>
+<div class="botones"><button type="submit" class="guardar">{% if editar %}Actualizar{% else %}Guardar cita{% endif %}</button><a href="{% url 'citas' %}" class="boton limpiar">Limpiar</a></div>
+</form></section>
+<section class="tarjeta"><h2>Lista de citas</h2><form method="get" class="buscar"><input type="search" name="buscar" value="{{ buscar }}" placeholder="Buscar cliente, asunto o estado"><button type="submit" class="buscar-btn">Buscar</button><a href="{% url 'citas' %}" class="boton limpiar">Ver todas</a></form>
+<div class="tabla-contenedor"><table><thead><tr><th>ID</th><th>Cliente</th><th>Asunto</th><th>Fecha</th><th>Hora</th><th>Dirección</th><th>Referencia</th><th>Notas</th><th>Estado</th><th>Creado</th><th>Actualizado</th><th>Acciones</th></tr></thead><tbody>
+{% for cita in citas %}<tr><td>{{ cita.id }}</td><td>{{ cita.cliente }}</td><td>{{ cita.asunto }}</td><td>{{ cita.fecha|date:'d/m/Y' }}</td><td>{{ cita.hora|time:'H:i' }}</td><td>{{ cita.direccion }}</td><td>{{ cita.referencia|default:'-' }}</td><td>{{ cita.notas|default:'-' }}</td><td>{{ cita.estado }}</td><td>{{ cita.created_at|date:'d/m/Y H:i' }}</td><td>{{ cita.updated_at|date:'d/m/Y H:i' }}</td><td><div class="acciones"><a href="{% url 'citas' %}?editar={{ cita.id }}" class="boton editar">Editar</a><form method="post" class="form-eliminar" action="{% url 'eliminar_cita' cita.id %}">{% csrf_token %}<button type="submit" class="eliminar">Eliminar</button></form></div></td></tr>
+{% empty %}<tr><td colspan="12">No hay citas registradas.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}
